@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.3.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true">
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes" value="text/html;charset=UTF-8"/>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+    <!-- 配置自动扫描的包 -->
+    <context:component-scan base-package="com.interceptors" />
+
+    <!--<context:component-scan base-package="com.controller" />-->
+
+    <mvc:resources mapping="/img/**" location="/img/" cache-period="2592000"/>
+    <mvc:resources mapping="/css/**" location="/css/" cache-period="2592000"/>
+    <mvc:resources mapping="/js/**" location="/js/" cache-period="2592000"/>
+
+    <!-- 文件上传支持 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 104857600 代表100MB -->
+        <property name="maxUploadSize" value="104857600" />
+        <property name="maxInMemorySize" value="40960" />
+        <property name="defaultEncoding" value="UTF-8"></property>
+    </bean>
+
+
+    <!-- 项目拦截器 -->
+    <mvc:interceptors>
+       <!--
+       <mvc:interceptors>
+            <mvc:mapping path="/aa"/>
+            <mvc:exclude-mapping path="/ok"/>
+            <mvc:exclude-mapping path="/ccc"/>
+            &lt;!&ndash;<mvc:exclude-mapping path="/user/**"/>&ndash;&gt;
+            <bean class="com.interceptors.MyInterCeptor"/>
+        </mvc:interceptors>
+        -->
+
+        <!-- 后台登录检查的拦截器 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/admin/**"/>
+            <mvc:exclude-mapping path="/admin/show.do"/>
+            <bean class="com.interceptors.AuthInterCeptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+
+    <!-- 配置视图解析器 如何把handler 方法返回值解析为实际的物理视图 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/"></property>
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+</beans>
